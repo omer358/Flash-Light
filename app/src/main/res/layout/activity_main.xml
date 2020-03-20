@@ -7,10 +7,10 @@
     tools:context=".MainActivity">
 
     <Switch
-        android:id="@+id/switch1"
+        android:id="@+id/sw_flash"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Switch"
+        android:text="@string/flash_light_string"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"

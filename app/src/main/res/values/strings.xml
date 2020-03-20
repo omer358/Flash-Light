@@ -1,3 +1,4 @@
 <resources>
     <string name="app_name">My Application</string>
+    <string name="flash_light_string">Flash Light</string>
 </resources>

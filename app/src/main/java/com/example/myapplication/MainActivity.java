@@ -13,31 +13,28 @@ import android.widget.Switch;
 
 public class MainActivity extends AppCompatActivity {
 
-    CameraManager mCameraManager;
-    private String mCameraId;
+    CameraManager manager;
+    Switch flashSwitch;
+    private String cameraId;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-
-        boolean isFlashAvailable = getApplicationContext().getPackageManager()
-                .hasSystemFeature(PackageManager.FEATURE_CAMERA_FRONT);
-
-        if (!isFlashAvailable) {
-            showNoFlashError();
+        boolean hasFeature = getApplicationContext().getPackageManager().hasSystemFeature(PackageManager.FEATURE_CAMERA_FRONT);
+        if (!hasFeature) {
+            noFeature();
         }
-
-        mCameraManager = (CameraManager) getSystemService(Context.CAMERA_SERVICE);
+        manager = (CameraManager) getSystemService(Context.CAMERA_SERVICE);
         try {
-            mCameraId = mCameraManager.getCameraIdList()[0];
+            cameraId = manager.getCameraIdList()[0];
         } catch (CameraAccessException e) {
             e.printStackTrace();
         }
 
-        Switch aSwitch = findViewById(R.id.switch1);
-        aSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+        flashSwitch = findViewById(R.id.sw_flash);
+        flashSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                 switchFlashLight(isChecked);
@@ -45,25 +42,27 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
-    public void showNoFlashError() {
-        AlertDialog alert = new AlertDialog.Builder(this)
-                .create();
-        alert.setTitle("Oops!");
-        alert.setMessage("Flash not available in this device...");
-        alert.setButton(DialogInterface.BUTTON_POSITIVE, "OK", new DialogInterface.OnClickListener() {
+    private void switchFlashLight(boolean isChecked) {
+        if (isChecked){
+            try {
+                manager.setTorchMode(cameraId,isChecked);
+            } catch (CameraAccessException e) {
+                e.printStackTrace();
+            }
+        }
+
+    }
+
+    private void noFeature() {
+        AlertDialog dialog = new AlertDialog.Builder(this).create();
+        dialog.setTitle("Error");
+        dialog.setMessage("the device doesn't support this feature!");
+        dialog.setButton(AlertDialog.BUTTON_POSITIVE, "OK", new DialogInterface.OnClickListener() {
+            @Override
             public void onClick(DialogInterface dialog, int which) {
                 finish();
             }
         });
-        alert.show();
-    }
-
-    public void switchFlashLight(boolean status) {
-        try {
-            mCameraManager.setTorchMode(mCameraId, status);
-        } catch (CameraAccessException e) {
-            e.printStackTrace();
-        }
+        dialog.show();
     }
 }
-
